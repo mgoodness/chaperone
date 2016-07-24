@@ -33,14 +33,22 @@ func init() {
 	pflag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	pflag.BoolVar(&version, "version", false, "Print version & exit")
 	pflag.Parse()
-}
-
-func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if verbose {
 		log.SetVerbose()
 	}
+
+	if dir == "" {
+		log.Fatal("Directory not set.")
+	}
+
+	if exe == "" {
+		log.Fatal("Process name not set.")
+	}
+}
+
+func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if version {
 		v.PrintVersionAndExit()
