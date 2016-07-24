@@ -1,0 +1,8 @@
+package: github.com/mgoodness/chaperone
+import:
+- package: github.com/Sirupsen/logrus
+  version: v0.10.0
+- package: github.com/fsnotify/fsnotify
+  version: v1.3.1
+- package: github.com/mitchellh/go-ps
+- package: github.com/spf13/pflag
