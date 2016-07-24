@@ -1,2 +1,2 @@
 # chaperone
-Chaperone is a Golang directory watcher that sends a SIGHUP signal to a process when a file change is detected.
+Chaperone is a Golang directory watcher that POSTs to a URL when a file change is detected.

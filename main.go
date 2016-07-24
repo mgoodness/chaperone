@@ -15,21 +15,21 @@
 package main
 
 import (
+	"net/http"
 	"runtime"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/mgoodness/chaperone/log"
-	"github.com/mgoodness/chaperone/process"
 	v "github.com/mgoodness/chaperone/version"
 	"github.com/spf13/pflag"
 )
 
-var dir, exe string
+var dir, url string
 var verbose, version bool
 
 func init() {
-	pflag.StringVarP(&dir, "dir", "d", dir, "Directory to monitor for changes")
-	pflag.StringVarP(&exe, "exe", "e", exe, "Process name to send SIGHUP")
+	pflag.StringVarP(&dir, "dir", "d", "", "Directory to watch for changes")
+	pflag.StringVarP(&url, "url", "u", "", "POST to URL when file changes")
 	pflag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	pflag.BoolVar(&version, "version", false, "Print version & exit")
 	pflag.Parse()
@@ -42,8 +42,8 @@ func init() {
 		log.Fatal("Directory not set.")
 	}
 
-	if exe == "" {
-		log.Fatal("Process name not set.")
+	if url == "" {
+		log.Fatal("URL not set.")
 	}
 }
 
@@ -54,6 +54,7 @@ func main() {
 		v.PrintVersionAndExit()
 	}
 
+	hc := http.Client{}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -61,13 +62,20 @@ func main() {
 	defer watcher.Close()
 
 	done := make(chan bool)
-	go func() error {
+	go func() {
 		for {
 			select {
 			case event := <-watcher.Events:
 				log.Debug(event)
-				if err := process.SendSIGHUP(exe); err != nil {
-					log.Fatal(err)
+				req, err := http.NewRequest("POST", url, nil)
+				if err != nil {
+					log.Info(err)
+				}
+				resp, err := hc.Do(req)
+				if err != nil {
+					log.Info(err)
+				} else {
+					log.Info(resp)
 				}
 			case err := <-watcher.Errors:
 				log.Fatal(err)
@@ -75,8 +83,7 @@ func main() {
 		}
 	}()
 
-	err = watcher.Add(dir)
-	if err != nil {
+	if err := watcher.Add(dir); err != nil {
 		log.Fatal(err)
 	}
 	log.Infof("Watching %s...", dir)

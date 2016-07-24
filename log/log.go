@@ -33,6 +33,11 @@ func Fatal(args ...interface{}) {
 	logger.Fatal(args...)
 }
 
+// Fatalf logs a message at level Fatal on the standard logger.
+func Fatalf(format string, args ...interface{}) {
+	logger.Fatalf(format, args...)
+}
+
 // Info logs a message at level Info on the standard logger.
 func Info(args ...interface{}) {
 	logger.Info(args...)
