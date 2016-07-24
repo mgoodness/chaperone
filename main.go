@@ -24,11 +24,11 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var dir, url string
+var path, url string
 var verbose, version bool
 
 func init() {
-	pflag.StringVarP(&dir, "dir", "d", "", "Directory to watch for changes")
+	pflag.StringVarP(&path, "path", "p", "", "File or directory to watch for changes")
 	pflag.StringVarP(&url, "url", "u", "", "POST to URL when file changes")
 	pflag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	pflag.BoolVar(&version, "version", false, "Print version & exit")
@@ -38,8 +38,8 @@ func init() {
 		log.SetVerbose()
 	}
 
-	if dir == "" {
-		log.Fatal("Directory not set.")
+	if path == "" {
+		log.Fatal("Path not set.")
 	}
 
 	if url == "" {
@@ -83,9 +83,9 @@ func main() {
 		}
 	}()
 
-	if err := watcher.Add(dir); err != nil {
+	if err := watcher.Add(path); err != nil {
 		log.Fatal(err)
 	}
-	log.Infof("Watching %s...", dir)
+	log.Infof("Watching %s...", path)
 	<-done
 }
