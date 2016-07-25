@@ -3,12 +3,12 @@ BINARY_NAME := chaperone
 BUILD_DATE := $$(date +%Y-%m-%d-%H:%M)
 ORG_PATH = github.com/mgoodness
 REPO_PATH = $(ORG_PATH)/$(BINARY_NAME)
-BUILD_DATE_VAR := $(REPO_PATH)/version.BuildDate
+BUILD_DATE_VAR := $(REPO_PATH)/BuildDate
 IMAGE_NAME := quay.io/mgoodness/$(BINARY_NAME)
 REPO_VERSION := $$(git describe --abbrev=0 --tags)
 GIT_HASH := $$(git rev-parse --short HEAD)
-GIT_VAR := $(REPO_PATH)/version.GitCommit
-VERSION_VAR := $(REPO_PATH)/version.Version
+GIT_VAR := $(REPO_PATH)/GitCommit
+VERSION_VAR := $(REPO_PATH)/Version
 GOBUILD_VERSION_ARGS := --ldflags "-s -X $(VERSION_VAR)=$(REPO_VERSION) -X $(GIT_VAR)=$(GIT_HASH) -X $(BUILD_DATE_VAR)=$(BUILD_DATE)"
 
 build: *.go fmt

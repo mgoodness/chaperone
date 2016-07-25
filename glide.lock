@@ -1,5 +1,5 @@
-hash: 37ecc47dd76d0e707290df9b8648a70d0056a6b3029fbc17b0072bada5f1c7b4
-updated: 2016-07-23T21:59:47.765086013-05:00
+hash: 6c9c46a04f68e98178196938f2e27b700d1ba5a82ddfe9c84c6a3684cc03a60b
+updated: 2016-07-24T22:00:49.342051579-05:00
 imports:
 - name: github.com/fsnotify/fsnotify
   version: a8a77c9133d2d6fd8334f3260d06f60e8d80a5fb
@@ -7,6 +7,8 @@ imports:
   version: e6c6068076470196af082b1ff896e24a51a87b2a
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: github.com/spf13/hugo
+  version: 7212e51347ce5dafcca16b86f6e3e212898d1728
 - name: github.com/spf13/pflag
   version: 1560c1005499d61b80f865c04d39ca7505bf7f0b
 - name: golang.org/x/sys

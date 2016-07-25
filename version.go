@@ -1,4 +1,4 @@
-package version
+package main
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ var GitCommit string
 var Version string
 
 // PrintVersionAndExit prints the version and exits
-func PrintVersionAndExit() {
+func printVersionAndExit() {
 	fmt.Printf("Version: %s - Commit: %s - Date: %s\n",
 		Version, GitCommit, BuildDate)
 	os.Exit(0)

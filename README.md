@@ -16,7 +16,7 @@ spec:
       args:
         - --dir=/etc/prometheus
         - --url=http://localhost:9090/-/reload
-      image: quay.io/mgoodness/chaperone:v0.1
+      image: quay.io/mgoodness/chaperone:v0.2
       volumeMounts:
         - name: config-volume
           mountPath: /etc/prometheus

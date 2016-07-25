@@ -15,27 +15,29 @@
 package main
 
 import (
-	"net/http"
 	"runtime"
+	"sync"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/mgoodness/chaperone/log"
-	v "github.com/mgoodness/chaperone/version"
+	log "github.com/Sirupsen/logrus"
+	"github.com/spf13/hugo/watcher"
 	"github.com/spf13/pflag"
 )
 
+var timeout int
 var path, url string
 var verbose, version bool
 
 func init() {
 	pflag.StringVarP(&path, "path", "p", "", "File or directory to watch for changes")
+	pflag.IntVarP(&timeout, "timeout", "t", 30, "Minimum time (in seconds) between POSTs")
 	pflag.StringVarP(&url, "url", "u", "", "POST to URL when file changes")
 	pflag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	pflag.BoolVar(&version, "version", false, "Print version & exit")
 	pflag.Parse()
 
 	if verbose {
-		log.SetVerbose()
+		log.SetLevel(log.DebugLevel)
 	}
 
 	if path == "" {
@@ -51,41 +53,35 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if version {
-		v.PrintVersionAndExit()
+		printVersionAndExit()
 	}
 
-	hc := http.Client{}
-	watcher, err := fsnotify.NewWatcher()
+	watcher, err := watcher.New(time.Duration(timeout) * time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer watcher.Close()
 
-	done := make(chan bool)
+	if err := watcher.Add(path); err != nil {
+		log.Fatal(err)
+	}
+	log.Infof("Watching %s...", path)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
 		for {
 			select {
-			case event := <-watcher.Events:
-				log.Debug(event)
-				req, err := http.NewRequest("POST", url, nil)
-				if err != nil {
-					log.Info(err)
+			case events := <-watcher.Events:
+				for _, event := range events {
+					log.Info(event)
 				}
-				resp, err := hc.Do(req)
-				if err != nil {
-					log.Info(err)
-				} else {
-					log.Info(resp)
-				}
+				post()
 			case err := <-watcher.Errors:
 				log.Fatal(err)
 			}
 		}
 	}()
-
-	if err := watcher.Add(path); err != nil {
-		log.Fatal(err)
-	}
-	log.Infof("Watching %s...", path)
-	<-done
+	wg.Wait()
 }
